@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
-const fruits = require('./models/fruits.js');
 const jsxViewEngine = require('jsx-view-engine');
+
+const fruits = require('./models/fruits.js');
+const vegetables = require('./models/vegetables.js');
+
 
 app.set('view engine', 'jsx');
 app.set('views', './views');
@@ -28,7 +31,7 @@ app.engine('jsx', jsxViewEngine());
 //     }
 // ];
 
-// ================ Middleware ================
+// ================ Middleware fruits ================
 //
 app.use((req, res, next) => {
     console.log('Middleware: I run for all routes');
@@ -51,24 +54,57 @@ app.use(express.urlencoded({extended:false}));
 // E - Edit     GET         UPDATE * - but this allows user input
 // S - Show     GET         READ - display a specific element
 
+/*
+    app.get(<ENDPOINT>, <MIDDLEWARE FUNCTION>)
+*/
+
 app.get('/', (req, res) => {
     res.send('this is my fruits root route');
 });
 
 // I - INDEX - dsiplays a list of all fruits
-app.get('/fruits/', (req, res) => {
+app.get('/fruits', (req, res) => {
     // res.send(fruits);
-    res.render('Index', {fruits: fruits});
+    // When you use res.render, the view engine is going to look in your views folder.
+    res.render('fruits/Index', {fruits: fruits});
 });
 
 
 // N - NEW - allows a user to input a new fruit
 app.get('/fruits/new', (req, res) => {
-    res.render('New');
+    res.render('fruits/New');
+});
+
+/*
+    Your express app is listening for HTTP requests.
+    When you go to a URL in your browser, your browser is making an HTTP GET request to that endpoint
+ */
+
+app.get('/vegetables', (req, res) => {
+    // res.send(vegetables);
+    res.render('veggies/IndexVeggies', {vegetables: vegetables});
+});
+
+app.get('/vegetables/new', (req, res) => {
+    res.render('veggies/NewVeggies');
+    // http://localhost:3000/vegetables/new
 });
 
 
 // C - CREATE - update our data store
+app.post('/vegetables', (req, res) => {
+    if(req.body.readyToEat === 'on') { //if checked, req.body.readyToEat is set to 'on'
+        req.body.readyToEat = true;
+    } else {  //if not checked, req.body.readyToEat is undefined
+        req.body.readyToEat = false;
+    }
+    vegetables.push(req.body);
+    // console.log(fruits);
+    // console.log(req.body)
+    // res.send('data received');
+    res.redirect('/vegetables'); // send user back to /fruits
+})
+
 app.post('/fruits', (req, res) => {
     if(req.body.readyToEat === 'on') { //if checked, req.body.readyToEat is set to 'on'
         req.body.readyToEat = true;
@@ -82,13 +118,23 @@ app.post('/fruits', (req, res) => {
     res.redirect('/fruits'); // send user back to /fruits
 })
 
+
+
 // S - SHOW - show route displays details of an individual fruit
 app.get('/fruits/:indexOfFruitsArray', (req, res) => {
     // res.send(fruits[req.params.indexOfFruitsArray]);
-    res.render('Show', {// second parameter must be an object
+    res.render('fruits/Show', {// second parameter must be an object
         fruit: fruits[req.params.indexOfFruitsArray]
     });
 })
+
+app.get('/vegetables/:indexOfVegetablesArray', (req, res) => {
+    // res.send(fruits[req.params.indexOfVegetablesArray]);
+    res.render('veggies/ShowVeggies', {// second parameter must be an object
+        vegetable: vegetables[req.params.indexOfVegetablesArray]
+    });
+})
+
 
 app.listen(3000, () => {
     console.log('listening');
