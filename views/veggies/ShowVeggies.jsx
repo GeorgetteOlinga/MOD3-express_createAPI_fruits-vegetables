@@ -14,4 +14,6 @@ class ShowVeggies extends React.Component {
     }
 }
 
+// git remote set-url origin https://git-repo/new-repository.git
+
 module.exports = ShowVeggies;
