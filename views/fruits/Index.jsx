@@ -16,7 +16,7 @@ class Index extends React.Component {
                         return (
                             <li>
                                 The {' '}
-                                <a href={`/fruits/${i}`}>
+                                <a href={`/fruits/${fruit._id}`}>
                                     {fruit.name}
                                 </a> {' '}
                                 is {fruit.color} <br></br>
@@ -24,6 +24,10 @@ class Index extends React.Component {
                                 ? `It is ready to eat`
                             :   `It is NOT ready to eat`}
                             <br />
+                            <a href={`/fruits/${fruit._id}/edit`}> Edit This Fruit </a>
+                            <form action={`/fruits/${fruit._id}?_method=DELETE`} method="POST">
+                                <input type="submit" value="DELETE" />
+                            </form>
                             </li>
                         )
                     })
